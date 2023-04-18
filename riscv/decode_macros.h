@@ -114,6 +114,7 @@ do { \
  
 #define SHAMT (insn.i_imm() & 0x3F)
 #define BRANCH_TARGET (pc + insn.sb_imm())
+#define BRANCH_OPCODE (insn.fn3() & 0x7)
 #define JUMP_TARGET (pc + insn.uj_imm())
 #define RM ({ int rm = insn.rm(); \
               if (rm == 7) rm = STATE.frm->read(); \
@@ -193,6 +194,11 @@ do { \
 #define set_pc(x) \
   do { p->check_pc_alignment(x); \
        npc = sext_xlen(x); \
+     } while (0)
+
+#define set_branch_outcome(x) \
+  do { p->update_branch_mispredictions(insn.bits(), p->predict_branch(STATE.pc), x); \
+       p->last_branch_result(STATE.pc, x); \
      } while (0)
 
 #define set_pc_and_serialize(x) \

@@ -97,6 +97,7 @@ public:
   reg_t                              pmpregions;
   cfg_arg_t<std::vector<mem_cfg_t>>  mem_layout;
   std::optional<reg_t>               start_pc;
+  reg_t                              branch_predictor_id;
   cfg_arg_t<std::vector<int>>        hartids;
   bool                               explicit_hartids;
   cfg_arg_t<bool>                    real_time_clint;

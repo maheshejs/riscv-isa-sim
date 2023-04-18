@@ -44,6 +44,10 @@ static void help(int exit_code = 1)
   fprintf(stderr, "  --priv=<m|mu|msu>     RISC-V privilege modes supported [default %s]\n", DEFAULT_PRIV);
   fprintf(stderr, "  --varch=<name>        RISC-V Vector uArch string [default %s]\n", DEFAULT_VARCH);
   fprintf(stderr, "  --pc=<address>        Override ELF entry point\n");
+  fprintf(stderr, "  --predictor=<0|1|2>   Select branch predictor\n");
+  fprintf(stderr, "                          0 -- (m,n)\n");
+  fprintf(stderr, "                          1 -- gshare\n");
+  fprintf(stderr, "                          2 -- perceptron\n");
   fprintf(stderr, "  --hartids=<a,b,...>   Explicitly specify hartids, default is 0,1,...\n");
   fprintf(stderr, "  --ic=<S>:<W>:<B>      Instantiate a cache model with S sets,\n");
   fprintf(stderr, "  --dc=<S>:<W>:<B>        W ways, and B-byte blocks (with S and\n");
@@ -415,6 +419,7 @@ int main(int argc, char** argv)
   parser.option('H', 0, 0, [&](const char UNUSED *s){halted = true;});
   parser.option(0, "rbb-port", 1, [&](const char* s){use_rbb = true; rbb_port = atoul_safe(s);});
   parser.option(0, "pc", 1, [&](const char* s){cfg.start_pc = strtoull(s, 0, 0);});
+  parser.option(0, "predictor", 1, [&](const char* s){cfg.branch_predictor_id = strtoull(s, 0, 0);});
   parser.option(0, "hartids", 1, [&](const char* s){
     cfg.hartids = parse_hartids(s);
     cfg.explicit_hartids = true;

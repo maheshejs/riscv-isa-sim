@@ -20,6 +20,10 @@
 
 #define N_HPMCOUNTERS 29
 
+#define PHT_COUNTER_BITS 3
+#define PHT_HASH_PRIME 16381
+#define PHT_SIZE 16384
+
 class processor_t;
 class mmu_t;
 typedef reg_t (*insn_func_t)(processor_t*, insn_t, reg_t);
@@ -29,6 +33,8 @@ class extension_t;
 class disassembler_t;
 
 reg_t illegal_instruction(processor_t* p, insn_t insn, reg_t pc);
+
+enum branch_predictor_t { MN, GSHARE, PERCEPTRON };
 
 struct insn_desc_t
 {
@@ -262,6 +268,10 @@ public:
   void set_virt(bool);
   const char* get_privilege_string();
   void update_histogram(reg_t pc);
+  void update_branch_histogram(insn_t insn);
+  void update_branch_mispredictions(insn_bits_t bits, uint8_t prediction, uint8_t outcome);
+  uint8_t predict_branch(reg_t pc);
+  void last_branch_result(reg_t pc, uint8_t outcome);
   const disassembler_t* get_disassembler() { return disassembler; }
 
   FILE *get_log_file() { return log_file; }
@@ -318,7 +328,14 @@ private:
   mutable std::bitset<NUM_ISA_EXTENSIONS> extension_assumed_const;
 
   std::vector<insn_desc_t> instructions;
+  branch_predictor_t branch_predictor;
+  uint64_t branch_mispredictions;
+  std::unordered_map<reg_t,uint64_t> branch_histogram;
+  std::unordered_map<insn_bits_t,uint64_t> branch_mp_histogram;
+  std::unordered_map<insn_bits_t,uint64_t> branch_gp_histogram;
   std::unordered_map<reg_t,uint64_t> pc_histogram;
+
+  uint32_t pattern_history_table[PHT_SIZE];
 
   static const size_t OPCODE_CACHE_SIZE = 8191;
   insn_desc_t opcode_cache[OPCODE_CACHE_SIZE];

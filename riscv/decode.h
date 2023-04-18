@@ -94,6 +94,8 @@ public:
   uint64_t rs2() { return x(20, 5); }
   uint64_t rs3() { return x(27, 5); }
   uint64_t rm() { return x(12, 3); }
+  uint64_t fn3() { return x(12, 3); }
+  uint64_t opcode() { return x(0, 7); }
   uint64_t csr() { return x(20, 12); }
   uint64_t iorw() { return x(20, 8); }
   uint64_t bs() { return x(30, 2); } // Crypto ISE - SM4/AES32 byte select.
